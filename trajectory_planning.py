@@ -3,8 +3,10 @@ import numpy as np
 import circle
 from jacobian import transform
 import angular_velocity_for_movement
+import forward_kinematics
 
 N = 36
+
 def position_t_array(t):
     return np.array((1, t, t**2, t**3, t**4, t**5))
 
@@ -43,16 +45,11 @@ def get_interpolation_matrix(joint_information:np.ndarray):
     return matrix
     
 
-DEFAULT_ANGLE_ACCELERATIONS = [np.zeros((4,2)) for _ in range(5)]
+# DEFAULT_ANGLE_ACCELERATIONS = [np.zeros((4,2)) for _ in range(5)]
+def circle_path(n_knots, lin_velocities, angle_accelerations = np.zeros(4)):
+    pass
 
-def circle_path(n_knots:int, lin_velocities, angular_velocities_func, angle_accelerations = np.zeros((4,2))):
-    
-    # accelaritons = np.zeros((4, 2))
-
-
-    # velocities = np.array(((0,0,0), (0,-27, 0), (0,0,-27), (0,27,0), (0,0,0)))
-    # angle_velocities = [np.array((1, 2, 3, 4)), np.array((5, 6, 7, 8))] # TODO get them from jacobian transformation of normal velocities
-    # angle_velocities = transform()
+def circle_path(n_knots:int, lin_velocities, x_dot_z = 0, angle_accelerations = np.zeros(4)):
     step = N//(n_knots - 1)
     indices = [i for i in range(0, N+1, step)]
     if indices[-1] != 36:
@@ -62,24 +59,21 @@ def circle_path(n_knots:int, lin_velocities, angular_velocities_func, angle_acce
         
     interpolation_matricies = []
     for movement_index in range(len(phis)-1):
-        print(phis[movement_index])
+        # print(phis[movement_index])
         angle_positions1 = circle.get_angles_for_phi(phis[movement_index])
-        import forward_kinematics
-        print(forward_kinematics.T04(*angle_positions1)) 
+        # print(forward_kinematics.T04(*angle_positions1)) 
         angle_positions2 = circle.get_angles_for_phi(phis[movement_index+1])
 
-        eta1 = np.concatenate((lin_velocities[movement_index], angular_velocities_func(phis[movement_index])))
+        eta1 = np.concatenate((lin_velocities[movement_index], np.array((x_dot_z,))))
         q_dot_1 = transform(angle_positions1, eta1)
-        eta2 = np.concatenate((lin_velocities[movement_index + 1], angular_velocities_func(phis[movement_index + 1])))
+        eta2 = np.concatenate((lin_velocities[movement_index + 1], np.array((x_dot_z,))))
         q_dot_2 = transform(angle_positions2, eta2)
         
 
-        joint_information1 = np.concatenate((angle_positions1, q_dot_1, np.zeros(4)))
-        joint_information2 = np.concatenate((angle_positions2, q_dot_2, np.zeros(4)))
+        joint_information1 = np.concatenate((angle_positions1, q_dot_1, angle_accelerations))
+        joint_information2 = np.concatenate((angle_positions2, q_dot_2, angle_accelerations))
         joint_information = np.stack((joint_information1, joint_information2)).T
-        # print(joint_information)
-        # return get_interpolation_matrix(joint_information)
-        # break
+
         interpolation_matricies.append(get_interpolation_matrix(joint_information))
     return interpolation_matricies
 

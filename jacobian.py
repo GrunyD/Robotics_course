@@ -1,6 +1,7 @@
 from robot_arms import *
 from math import cos, sin, pi, sqrt
 import numpy as np
+import forward_kinematics
 
 z0 = np.array((0,0,1))
 
@@ -42,10 +43,23 @@ def jacobian(q1, q2, q3, q4, end_effector:str = 'stylus') -> np.ndarray:
     return np.array(jacobian).T
 
 
+def get_J_4x4(q1,q2,q3,q4):
+    T04 = forward_kinematics.T04(q1, q2, q3, q4)
+    Ryx = T04[1,0]
+    Rxx = T04[0,0]
+    J_4x4 = np.array(((1,0,0,0,0,0),
+                      (0,1,0,0,0,0),
+                      (0,0,1,0,0,0),
+                      (0,0,0,Ryx, -Rxx, 0)))
+    return J_4x4
 
+def get_full_J(q1,q2,q3,q4):
+    J = jacobian(q1,q2,q3,q4)
+    J_4x4 = get_J_4x4(q1,q2,q3,q4)
+    return J_4x4 @ J
 
 def transform(angles, vector):
-    inv_jacobian = np.linalg.pinv(jacobian(*angles))
+    inv_jacobian = np.linalg.inv(get_full_J(*angles))
     return inv_jacobian @  vector
 
 def print_matrix(matrix):
@@ -58,7 +72,7 @@ def print_matrix(matrix):
 if __name__ == "__main__":
     import circle
     from reverse_kinematics import get_angles
-    phis = [0, pi/2, pi, 3*pi/2]
+    phis = [pi/2, pi, 3*pi/2]
     
     for phi in phis:
         print("_____________________")
@@ -66,13 +80,17 @@ if __name__ == "__main__":
         o04 = circle.get_o04(phi, circle.P0C, circle.R)
         x04 = circle.get_x04(phi, circle.BASE_X04, circle.R)
         angles = get_angles(o04, x04)
-        print("Stylus:")
-        j = jacobian(*angles, end_effector='stylus')
-        print_matrix(j)
-        print("Camera:")
-        j = jacobian(*angles, end_effector='camera')
-        print_matrix(j)
-        print("______________________")
+        # print("Stylus:")
+        # j = jacobian(*angles, end_effector='stylus')
+        # print_matrix(j)
+        # print("Camera:")
+        # j = jacobian(*angles, end_effector='camera')
+        # print_matrix(j)
+        # print("______________________")
+        full_J = get_full_J(*angles)
+        inv_J = np.linalg.inv(full_J)
+        print(inv_J @ np.array((0,-3,0,0)))
+        break
 
     # phi = pi
     # angles = circle.get_angles_for_phi(phi)

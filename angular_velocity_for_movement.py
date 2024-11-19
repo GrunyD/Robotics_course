@@ -1,6 +1,8 @@
-import numpy as np
 from math import sin, cos, pi, atan
 
+import numpy as np
+
+import circle
 
 def omega_given_circle(phi, r = 32, x = 150, v = 27):
     """
@@ -11,6 +13,7 @@ def omega_given_circle(phi, r = 32, x = 150, v = 27):
     stylus should be horizontal the whole time
     """
     theta = atan((r*cos(phi))/x)
+    # theta = circle.theta(phi, r, x)
     der_theta = (-r*sin(phi)/150)*(v/r)/(1 + (r*cos(phi)/150)**2)
     R = np.array(((cos(theta),  0,  sin(theta)),
                   (sin(theta),  0,  -cos(theta)),
