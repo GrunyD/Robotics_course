@@ -72,7 +72,7 @@ def print_matrix(matrix):
 if __name__ == "__main__":
     import circle
     from reverse_kinematics import get_angles
-    phis = [pi/2, pi, 3*pi/2]
+    phis = [0, pi/2, pi, 3*pi/2]
     
     for phi in phis:
         print("_____________________")
@@ -80,16 +80,19 @@ if __name__ == "__main__":
         o04 = circle.get_o04(phi, circle.P0C, circle.R)
         x04 = circle.get_x04(phi, circle.BASE_X04, circle.R)
         angles = get_angles(o04, x04)
+        
         # print("Stylus:")
-        # j = jacobian(*angles, end_effector='stylus')
+        j = jacobian(*angles, end_effector='stylus')
+        print(j)
         # print_matrix(j)
         # print("Camera:")
         # j = jacobian(*angles, end_effector='camera')
         # print_matrix(j)
         # print("______________________")
-        full_J = get_full_J(*angles)
-        inv_J = np.linalg.inv(full_J)
-        print(inv_J @ np.array((0,-3,0,0)))
+        # full_J = get_full_J(*angles)
+        # inv_J = np.linalg.inv(full_J)
+        # print(inv_J @ np.array((0,-3,0,0)))
+        
         break
 
     # phi = pi

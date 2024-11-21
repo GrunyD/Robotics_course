@@ -1,9 +1,9 @@
 from math import sin, cos, pi
 import numpy as np
 from reverse_kinematics import get_angles
-BASE_X04 = np.array((150, 0, 0))
-P0C= np.array((150, 0, 120))
-R= 32
+BASE_X04 = np.array((0.150, 0, 0))
+P0C= np.array((0.150, 0, 0.120))
+R= 0.032
 N = 37
 ELBOW_UP = True
 
@@ -28,7 +28,8 @@ def get_angles_for_phi(phi, p0c = P0C, base_x04 = BASE_X04, r = R):
 
 def x_dot(phi):
     #TODO make this more general
-    return np.array((0, 0, (-R/150 *sin(phi))/(1 + (R/150*cos(phi))**2)))
+    # return np.array((0, 0, (-R/150 *sin(phi))/(1 + (R/150*cos(phi))**2)))
+    return np.array((0, 0, (-R/0.150 *sin(phi))/(1 + (R/0.150*cos(phi))**2)))
 
 if __name__ == "__main__":
     

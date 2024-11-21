@@ -10,7 +10,13 @@ N = 36
 def position_t_array(t):
     return np.array((1, t, t**2, t**3, t**4, t**5))
 
-def get_t_matrix(initial_t:float, end_t:float, order:int = 6):
+def velocity_t_array(t):
+    return np.array(((0, 1, 2*t, 3*t**2, 4*t**3, 5*t**4)))
+
+def acceleration_t_array(t):
+    return np.array((0, 0, 2, 6*t, 12*t**2, 20*t**3))
+
+def get_t_matrix(initial_t:float, end_t:float):
     """
     order: how many coefficients the interpolation is gonna have
     """
@@ -24,7 +30,7 @@ def get_joint_polynomial(angles:np.ndarray, initial_t:float = 0, end_t:float = 2
     initial_t: initial time of this movement (usually 0)
     end_t: end time of this movement, how long is the whole movement going to take
     """
-    t_matrix = get_t_matrix(initial_t, end_t, order = len(angles))
+    t_matrix = get_t_matrix(initial_t, end_t)
     t_matrix_inverse = np.linalg.inv(t_matrix)
     return t_matrix_inverse @ angles
 
