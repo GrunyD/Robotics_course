@@ -83,37 +83,17 @@ if __name__ == "__main__":
         angles = get_angles(o04, x04)
         
         angles = circle.get_angles_for_phi(phi)
+        print('Stylus:')
         j = jacobian(*angles, end_effector='stylus')
-        print('Jacobian: \n', j)
-        print('Angles: ', angles)
-        print('Joint velocities: ', transform(angles, np.array((0, -0.027, 0, 0))))
+        print('Jacobian Stylus: \n', j)
+
+        j = jacobian(*angles, end_effector='camera')
+        print('Jacobian Camera: \n', j)
+        # print('Inv jacobian: \n', np.linalg.inv(get_full_J(*angles)))
+        # print('Angles: ', angles)
+        # print('Joint velocities: ', transform(angles, lin_velocity))
 
 
-
-        # print_matrix(j)
-        # print("Camera:")
-        # j = jacobian(*angles, end_effector='camera')
-        # print_matrix(j)
-        # print("______________________")
-        # full_J = get_full_J(*angles)
-        # inv_J = np.linalg.inv(full_J)
-        # print(inv_J @ np.array((0,-3,0,0)))
-        
-
-    # phi = pi
-    # angles = circle.get_angles_for_phi(phi)
-    # # print(angles)
-    # j = jacobian(*angles)
-    # print(np.linalg.matrix_rank(j))
-    # print("J: \n", j)
-    # # jv = j[0:3,:]
-    # # print("JV", jv)
-
-    # # inv_j = pseudoinverse(j)
-    # inv_j = np.linalg.pinv(j)
-    # print(inv_j)
-    # q_dot = inv_j @ np.concatenate((np.array((0,0,-3)), circle.x_dot(phi)))
-    # print(q_dot)
 
 
 

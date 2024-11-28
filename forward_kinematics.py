@@ -48,4 +48,7 @@ def T05(q1, q2, q3, q4):
 
 if __name__ == "__main__":
     # print(T03(0, -pi/2, 0))
-    print(T04(0.0, 0.10513387206005387, -1.7098729806912683, 0.033942781836317215))
+    import circle
+    angles = circle.get_angles_for_phi(0)
+    print(angles)
+    print(T04(*angles))

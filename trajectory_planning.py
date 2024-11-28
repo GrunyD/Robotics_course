@@ -51,11 +51,8 @@ def get_interpolation_matrix(joint_information:np.ndarray):
     return matrix
     
 
-# DEFAULT_ANGLE_ACCELERATIONS = [np.zeros((4,2)) for _ in range(5)]
-def circle_path(n_knots, lin_velocities, angle_accelerations = np.zeros(4)):
-    pass
 
-def circle_path(n_knots:int, lin_velocities, x_dot_z = 0, angle_accelerations = np.zeros(4)):
+def circle_path(n_knots:int, lin_velocities, lin_accelerations, x_dot_z = 0):
     step = N//(n_knots - 1)
     indices = [i for i in range(0, N+1, step)]
     if indices[-1] != 36:
@@ -74,10 +71,15 @@ def circle_path(n_knots:int, lin_velocities, x_dot_z = 0, angle_accelerations = 
         q_dot_1 = transform(angle_positions1, eta1)
         eta2 = np.concatenate((lin_velocities[movement_index + 1], np.array((x_dot_z,))))
         q_dot_2 = transform(angle_positions2, eta2)
+
+        eta_dot_1 = np.concatenate((lin_accelerations[movement_index], np.array((x_dot_z,))))
+        q_dot_dot_1 = transform(angle_positions1, eta_dot_1)
+        eta_dot_2 = np.concatenate((lin_accelerations[movement_index + 1], np.array((x_dot_z,))))
+        q_dot_dot_2 = transform(angle_positions2, eta_dot_2)
         
 
-        joint_information1 = np.concatenate((angle_positions1, q_dot_1, angle_accelerations))
-        joint_information2 = np.concatenate((angle_positions2, q_dot_2, angle_accelerations))
+        joint_information1 = np.concatenate((angle_positions1, q_dot_1, q_dot_dot_1))
+        joint_information2 = np.concatenate((angle_positions2, q_dot_2, q_dot_dot_2))
         joint_information = np.stack((joint_information1, joint_information2)).T
 
         interpolation_matricies.append(get_interpolation_matrix(joint_information))
@@ -89,7 +91,7 @@ if __name__ == "__main__":
     # matrix =get_t_matrix(0, 2)
     # print(matrix)
     # print(np.linalg.det(matrix))
-    lin_velocities = np.array(((0,0,0), (0,-27, 0), (0,0,-27), (0,27,0), (0,0,0)))
-    circle_path(n_knots = 5, lin_velocities=lin_velocities, angular_velocities_func= angular_velocity_for_movement.omega_given_circle)
-
+    lin_velocities = np.array(((0,0,0), (0,-0.027, 0), (0,0,-0.027), (0,0.027,0), (0,0,0)))
+    mats = circle_path(n_knots = 5, lin_velocities=lin_velocities)
+    print(mats)
 
